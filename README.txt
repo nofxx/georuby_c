@@ -4,7 +4,9 @@ Git clone of http://geo.rubyforge.org. A 2D geometry library for ruby.
 
 == DESCRIPTION:
 
-It provides fast operations for points, lines, triangles, intersections and containers.
+geo is a ruby gem that provides a fast 2D geometry library.
+It provides fast operations for points, lines, triangles, intersections between lines 
+and triangles and triangles containing points.
 
 == REQUIREMENTS:
 
