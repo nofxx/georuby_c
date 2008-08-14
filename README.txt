@@ -1,48 +1,34 @@
 = georuby_c
 
-* FIX (url)
+Git clone of http://geo.rubyforge.org. A 2D geometry library for ruby.
 
 == DESCRIPTION:
 
-FIX (describe your package)
-
-== FEATURES/PROBLEMS:
-
-* FIX (list of features or problems)
-
-== SYNOPSIS:
-
-  FIX (code sample of usage)
+It provides fast operations for points, lines, triangles, intersections and containers.
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+glib:: http://www.gtk.org/
 
-== INSTALL:
+== FEATURES:
 
-* FIX (sudo gem install, anything else)
+Geo::Point:: A 2D point providing some common geometry operations.
+Geo::Line:: A 2D line consisting of 2 Geo::Points providing some common geometry operations.
+Geo::Triangle:: A 2D triangle consisting of 3 Geo::Points providing some common geometry operations.
+Geo::PointSet:: A Set-like container of Points.
+Geo::LineSet:: A Set-like container of Lines that provides optimized versions of some common geometry operations on lines.
+Geo::TriangleSet:: A Set-like container of Triangles that provides optimized versions of some common geometry operations on lines.
 
-== LICENSE:
+== Usage:
 
-(The MIT License)
+To use geo just install the gem.
 
-Copyright (c) 2008 FIXME full name
+== Examples:
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+To find if a given line intersects a set of 100 000 other lines:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+ :include:examples/intersects.rb
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+== License:
+
+This library is provided under the GPL-2.
