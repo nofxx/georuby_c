@@ -3,3 +3,5 @@ pkg/*.gem
 pkg/*.tgz
 pkg/**/*
 *.o
+mkmf.log
+Makefile
