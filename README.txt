@@ -1,18 +1,40 @@
 = georuby_c
 
-Git clone of http://geo.rubyforge.org. A 2D geometry library for ruby.
+Experiment with GeoRuby (http://georuby.rubyforge.org) with the fast Geo (http://geo.rubyforge.org). 
+
 
 == DESCRIPTION:
 
-geo is a ruby gem that provides a fast 2D geometry library.
-It provides fast operations for points, lines, triangles, intersections between lines 
-and triangles and triangles containing points.
+the objective is provide all the georuby functionalities, with time consuming calculus in C.
+_this is not usable yet_
+
+See:
+GeoRuby (http://georuby.rubyforge.org)
+Copyright (c) 2006 Guilhem Vellut <guilhem.vellut+georuby@gmail.com>
+
+Geo (http://geo.rubyforge.org)
+Copyright (C) 2007 Martin Kihlgren
+
 
 == REQUIREMENTS:
 
 glib:: http://www.gtk.org/
 
 == FEATURES:
+
+=Available data types
+
+- Point
+- Line string
+- Linear ring
+- Polygon
+- Multi point
+- Multi line string
+- Multi polygon
+- Geometry collection
+
+They can be in 2D, 3DZ, 3DM, and 4D.
+
 
 Geo::Point:: A 2D point providing some common geometry operations.
 Geo::Line:: A 2D line consisting of 2 Geo::Points providing some common geometry operations.
@@ -23,7 +45,7 @@ Geo::TriangleSet:: A Set-like container of Triangles that provides optimized ver
 
 == Usage:
 
-To use geo just install the gem.
+Just install the gem.
 
 == Examples:
 
@@ -33,4 +55,5 @@ To find if a given line intersects a set of 100 000 other lines:
 
 == License:
 
-This library is provided under the GPL-2.
+GeoRuby is released under the MIT license.
+geo is provided under the GPL-2.

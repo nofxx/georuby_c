@@ -6,3 +6,4 @@ pkg/**/*
 mkmf.log
 Makefile
 coverage/*
+doc/*

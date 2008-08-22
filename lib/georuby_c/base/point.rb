@@ -34,32 +34,25 @@ module GeorubyC
       end
       alias :set_lon_lat :set_x_y
       
-      #Return the distance between the 2D points (ie taking care only of the x and y coordinates), assuming the points are in projected coordinates. Euclidian distance in whatever unit the x and y ordinates are.
+      #Return the distance between the 2D points (ie taking care only of the x and y coordinates), assuming 
+      #the points are in projected coordinates. Euclidian distance in whatever unit the x and y ordinates are.
       def euclidian_distance(point)
         Math.sqrt((point.x - x)**2 + (point.y - y)**2)
       end
 
-      #Returns the sperical distance in m, with a radius of 6471000m, with the haversine law. Assumes x is the lon and y the lat, in degrees (Changed in version 1.1). The user has to make sure using this distance makes sense (ie she should be in latlon coordinates)
-      def spherical_distance(point,radius=6370997.0)
+      #Returns the sperical distance in meters, with a radius of 6471000m, with the haversine law. 
+      #Assumes x is the lon and y the lat, in degrees (Changed in version 1.1). 
+      #The user has to make sure using this distance makes sense (ie she should be in latlon coordinates)
+      def spherical_distance(point,r=6370997.0)
         deg_to_rad = 0.0174532925199433        
-#        radlat_from = lat * deg_to_rad
- #       radlat_to = point.lat * deg_to_rad        
-#        dlat = (point.lat - lat) * deg_to_rad
-#        dlon = (point.lon - lon) * deg_to_rad
+        radlat_from = lat * deg_to_rad
+        radlat_to = point.lat * deg_to_rad        
+        dlat = (point.lat - lat) * deg_to_rad / 2
+        dlon = (point.lon - lon) * deg_to_rad / 2
  
-#        a = Math.sin(dlat/2)**2 + Math.cos(radlat_from) * Math.cos(radlat_to) * Math.sin(dlon/2)**2
-#        c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-#        radius * c
-        # def xdistancia(p1,p2)
-        #   x1, y1, x2, y2 = p1.x, p1.y, p2.x, p2.y
-           dlat = deg2rad(point.x - x)/2
-           dlon = deg2rad(point.y - y)/2
-           a = (Math.sin(dlat) ** 2) + Math.cos(deg2rad(x)) * Math.cos(deg2rad(point.x)) * (Math.sin(dlon) ** 2)
-           b = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-           c = radius * b
-        #   return c
-        # end
-        # 
+        a = Math.sin(dlat)**2 + Math.cos(radlat_from) * Math.cos(radlat_to) * Math.sin(dlon)**2
+        c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+        r * c
       end
 
       #Ellipsoidal distance in m using Vincenty's formula. Lifted entirely from Chris Veness's code at http://www.movable-type.co.uk/scripts/LatLongVincenty.html and adapted for Ruby. Assumes the x and y are the lon and lat in degrees.
