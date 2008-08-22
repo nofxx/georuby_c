@@ -5,3 +5,4 @@ pkg/**/*
 *.o
 mkmf.log
 Makefile
+coverage/*

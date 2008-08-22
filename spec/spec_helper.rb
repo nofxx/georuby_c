@@ -8,3 +8,5 @@ end
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'georuby_c'
+include GeorubyC
+include Base
