@@ -11,7 +11,7 @@ module GeorubyC
       alias :lng :x
       alias :lat :y
       
-      def initialize(srid=DEFAULT_SRID,with_z=false,with_m=false)
+      def initialize(srid=@@srid,with_z=false,with_m=false)
         super(srid,with_z,with_m)
         @x = @y = 0.0
         @z=0.0 #default value : meaningful if with_z
@@ -192,7 +192,7 @@ module GeorubyC
       end
       
       #creates a point from an array of coordinates
-      def self.from_coordinates(coords,srid=DEFAULT_SRID,with_z=false,with_m=false)
+      def self.from_coordinates(coords,srid=@@srid,with_z=false,with_m=false)
         if ! (with_z or with_m)
           from_x_y(coords[0],coords[1],srid)
         elsif with_z and with_m
@@ -205,27 +205,27 @@ module GeorubyC
       end
 
       #creates a point from the X and Y coordinates
-      def self.from_x_y(x,y,srid=DEFAULT_SRID)
+      def self.from_x_y(x,y,srid=@@srid)
         point= new(srid)
         point.set_x_y(x,y)
       end
       
       #creates a point from the X, Y and Z coordinates
-      def self.from_x_y_z(x,y,z,srid=DEFAULT_SRID)
+      def self.from_x_y_z(x,y,z,srid=@@srid)
         point= new(srid,true)
         point.set_x_y_z(x,y,z)
       end
       
 
       #creates a point from the X, Y and M coordinates
-      def self.from_x_y_m(x,y,m,srid=DEFAULT_SRID)
+      def self.from_x_y_m(x,y,m,srid=@@srid)
         point= new(srid,false,true)
         point.m=m
         point.set_x_y(x,y)
       end
       
       #creates a point from the X, Y, Z and M coordinates
-      def self.from_x_y_z_m(x,y,z,m,srid=DEFAULT_SRID)
+      def self.from_x_y_z_m(x,y,z,m,srid=@@srid)
         point= new(srid,true,true)
         point.m=m
         point.set_x_y_z(x,y,z)
@@ -233,7 +233,7 @@ module GeorubyC
       
       #creates a point using degrees and heading
       # x coord, x heading, y coord, y heading 
-      def self.from_x_y_xl_yl(x,xl,y,yl,srid=DEFAULT_SRID)
+      def self.from_x_y_xl_yl(x,xl,y,yl,srid=@@srid)
         x = x[0..2].to_i + (x[3..-1].to_f/60)    
         y = y[0..1].to_i + (y[2..-1].to_f/60)        
         x *= -1 if xl == 'W'
