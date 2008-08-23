@@ -184,6 +184,23 @@ module GeorubyC
         result += "</Point>\n"
       end
       
+      #Polar stuff
+      #http://www.engineeringtoolbox.com/converting-cartesian-polar-coordinates-d_1347.html
+      #http://rcoordinate.rubyforge.org/svn/point.rb
+      def r
+        Math.sqrt(x**2 + y**2)
+      end      
+
+      def t
+        if x == 0
+    			y < 0 ? 3 * Math::PI / 2 :	Math::PI / 2
+    		else
+    			t = Math.atan(y/x)
+    		  t += 2 * Math::PI if t > 0
+    		  rad2deg(t)
+    		end
+      end      
+      
       #creates a point from an array of coordinates
       def self.from_coordinates(coords,srid=@@srid,with_z=false,with_m=false)
         if ! (with_z or with_m)
@@ -231,6 +248,17 @@ module GeorubyC
         y = y[0..1].to_i + (y[2..-1].to_f/60)        
         x *= -1 if xl == 'W'
         y *= -1 if yl == 'S'
+        point= new(srid)
+        point.set_x_y(x,y)
+      end
+      
+      #creates a point using polar coordinates 
+      #r and theta(degrees)
+      def self.from_polar_r_t(r,t,srid=@@srid)
+        deg2rad = 0.0174532925199433        
+        t = t * deg2rad
+        x = r * Math.cos(t)
+        y = r * Math.sin(t)
         point= new(srid)
         point.set_x_y(x,y)
       end
