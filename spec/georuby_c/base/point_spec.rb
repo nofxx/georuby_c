@@ -43,6 +43,12 @@ describe Point do
     it "should print theta" do
       @point.t.should be_close(-70.815593647873, 0.0001)
     end
+    
+    it "should output as polar" do
+      @point.as_polar.should be_instance_of(Array)
+      @point.as_polar.length.should eql(2)
+    end
+    
   end
   describe "Instantiation" do
     
@@ -100,4 +106,19 @@ describe Point do
     end
     
   end  
+  
+  describe "C extensions" do
+    include Native
+    # before(:each) do
+    #   
+    # end
+    it "should create a native C point directly" do
+      @point = Native::Point.new(1,2)
+      @point.should be_instance_of(Point)
+    end
+    
+    
+    
+    
+  end
 end

@@ -34,6 +34,11 @@ module GeorubyC
       end
       alias :set_lon_lat :set_x_y
       
+      #Return a point using the native C lib
+      def to_c
+        Native::Point.new(x,y)
+      end
+      
       #Return the distance between the 2D points (ie taking care only of the x and y coordinates), assuming 
       #the points are in projected coordinates. Euclidian distance in whatever unit the x and y ordinates are.
       def euclidian_distance(point)
@@ -104,7 +109,6 @@ module GeorubyC
       
         b*a_bis*(sigma-deltaSigma)
       end
-
             
       #Bounding box in 2D/3D. Returns an array of 2 points
       def bounding_box
@@ -187,10 +191,13 @@ module GeorubyC
       #Polar stuff
       #http://www.engineeringtoolbox.com/converting-cartesian-polar-coordinates-d_1347.html
       #http://rcoordinate.rubyforge.org/svn/point.rb
+      
+      #polar distance
       def r
         Math.sqrt(x**2 + y**2)
       end      
 
+      #outputs theta in degrees
       def t
         if x == 0
     			y < 0 ? 3 * Math::PI / 2 :	Math::PI / 2
@@ -200,6 +207,11 @@ module GeorubyC
     		  rad2deg(t)
     		end
       end      
+      
+      #outputs an array containing polar distance and theta
+      def as_polar
+        [r,t]
+      end  
       
       #creates a point from an array of coordinates
       def self.from_coordinates(coords,srid=@@srid,with_z=false,with_m=false)
@@ -256,7 +268,7 @@ module GeorubyC
       #r and theta(degrees)
       def self.from_polar_r_t(r,t,srid=@@srid)
         deg2rad = 0.0174532925199433        
-        t = t * deg2rad
+        t *= deg2rad
         x = r * Math.cos(t)
         y = r * Math.sin(t)
         point= new(srid)
