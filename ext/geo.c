@@ -33,7 +33,6 @@ extern "C" {
     rb_define_method(rb_cFloat, "intlike?", rb_float_intlike, 0);
 
     VALUE rb_geo = rb_define_module("Geo");
-    rb_define_const(rb_geo, "VERSION", rb_str_new2("0.1.6"));
 
     rb_triangle_set = rb_define_class_under(rb_geo,
 					    "TriangleSet",
@@ -155,6 +154,7 @@ extern "C" {
     rb_define_method(rb_line, "contains?", rb_line_contains, 1);
     rb_define_method(rb_line, "parallel", rb_line_parallel, 1);
     rb_define_method(rb_line, "<=>", rb_line_cmp, 1);
+    rb_define_method(rb_line, "mirror", rb_line_mirror, 1);
 
     rb_define_alloc_func(rb_point, rb_point_alloc);
     rb_define_method(rb_point, "initialize", rb_point_initialize, 2);
@@ -180,8 +180,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-void
-init_geo_o() {
-}
-

@@ -82,7 +82,7 @@ rb_triangle_initialize(int argc, VALUE *argv, VALUE self) {
     RB_POINT(p2, rb_point);
     RB_POINT(p3, rb_point);
   } else {
-    rb_raise(rb_eTypeError, "Arguments to %s#new have to be 3 Grueserve::Map::Points or 6 numbers.", rb_obj_classname(self));
+    rb_raise(rb_eTypeError, "Arguments to %s#new have to be 3 Geo::Points or 6 numbers.", rb_obj_classname(self));
   }
   TRIANGLE(self, t);
   t->p1 = p1;
@@ -446,6 +446,3 @@ rb_triangle_from_gpointer(gpointer l) {
   return ( (Triangle *) l)->rbTriangle;
 }
 
-void
-init_triangle_o() {
-}

@@ -73,7 +73,3 @@ rb_intersection(Intersection *intersection, Point *from) {
   }
 }
 
-void
-init_intersection_o() {
-}
-

@@ -233,7 +233,7 @@ rb_point_to(int argc, VALUE *argv, VALUE self) {
     rval = new_line_with_points(me, other_end);
     return RB_LINE(rval, rb_line);
   } else {
-    rb_raise(rb_eTypeError, "Arguments to %s#to has to be either a Grueserve::Map::Point or 2 numbers.", rb_obj_classname(self));
+    rb_raise(rb_eTypeError, "Arguments to %s#to has to be either a Geo::Point or 2 numbers.", rb_obj_classname(self));
   }
 }
 
@@ -301,6 +301,3 @@ point_hash(gconstpointer p) {
   return (guint) (point->x + point->y);
 }
 
-void
-init_point_o() {
-}

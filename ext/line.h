@@ -199,4 +199,7 @@ line_equals(gconstpointer a, gconstpointer b);
 void
 line_free(Line *l);
 
+VALUE
+rb_line_mirror(VALUE self, VALUE other);
+
 #endif

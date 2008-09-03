@@ -530,7 +530,3 @@ rb_geo_set_height(VALUE self) {
   return rb_float_new(GEO_SET_HEIGHT(set));
 }
 
-void
-init_geo_set_o() {
-}
-

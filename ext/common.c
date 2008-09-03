@@ -48,6 +48,3 @@ gpointer_compare_as_uint(gconstpointer p1, gconstpointer p2) {
   return GPOINTER_TO_UINT(p1) - GPOINTER_TO_UINT(p2);
 }
 
-void
-init_common_o() {
-}

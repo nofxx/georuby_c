@@ -5,10 +5,11 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'georuby_c/base/helper'
 require 'georuby_c/base/geometry'
 require 'georuby_c/base/point'
+require 'georuby_c/base/line_string'
 require 'ext/geo'
 
 module GeorubyC
-  include Base
+  #include Base
   module Native
     include Geo
   end

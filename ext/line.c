@@ -95,7 +95,7 @@ rb_line_initialize(int argc, VALUE *argv, VALUE self) {
     RB_POINT(p1, rb_point);
     RB_POINT(p2, rb_point);
   } else {
-    rb_raise(rb_eTypeError, "Arguments to %s#new have to be 2 Grueserve::Map::Points or 4 numbers.", rb_obj_classname(self));
+    rb_raise(rb_eTypeError, "Arguments to %s#new have to be 2 Geo::Points or 4 numbers.", rb_obj_classname(self));
   }
   LINE(self, l);
   l->p1 = p1;
@@ -193,7 +193,7 @@ rb_line_within(VALUE self, VALUE arg) {
       return Qfalse;
     }
   } else {
-    rb_raise(rb_eTypeError, "Argument to %s#within? has to be either Grueserve::Map::Line or Grueserve::Map::Point.", rb_obj_classname(self));
+    rb_raise(rb_eTypeError, "Argument to %s#within? has to be either Geo::Line or Geo::Point.", rb_obj_classname(self));
   }
 }
 
@@ -225,7 +225,7 @@ rb_line_outside(VALUE self, VALUE arg) {
       return Qfalse;
     }
   } else {
-    rb_raise(rb_eTypeError, "Argument to %s#outside? has to be either Grueserve::Map::Line or Grueserve::Map::Point.", rb_obj_classname(self));
+    rb_raise(rb_eTypeError, "Argument to %s#outside? has to be either Geo::Line or Geo::Point.", rb_obj_classname(self));
   }
 }
 
@@ -386,8 +386,10 @@ rb_line_cmp(VALUE self, VALUE o) {
 VALUE
 rb_line_reverse(VALUE self) {
   Line *me;
+  Line *rval;
   LINE(self, me);
-  return RB_LINE(new_line_with_points(me->p2, me->p1), rb_line);
+  rval = new_line_with_points(me->p2, me->p1);
+  return RB_LINE(rval, CLASS(self));
 }
 
 VALUE
@@ -417,8 +419,8 @@ rb_line_angle(VALUE self) {
 void
 line_set_abs(Line *me, double new_abs) {
   double ratio = new_abs / DISTANCE(me->p1, me->p2);
-  me->p2->x = me->p2->x * ratio;
-  me->p2->y = me->p2->y * ratio;
+  me->p2->x = me->p1->x + ((me->p2->x - me->p1->x) * ratio);
+  me->p2->y = me->p1->y + ((me->p2->y - me->p1->y) * ratio);
 }
 
 VALUE
@@ -440,6 +442,67 @@ rb_line_clone(VALUE self) {
   RB_POINT(rval->p1, CLASS(me->p1->rbPoint));
   RB_POINT(rval->p2, CLASS(me->p2->rbPoint));
   return RB_LINE(rval, CLASS(self));
+}
+
+static Point*
+line_mirror_point(Line *l, Point *p) {
+  Point *rval;
+  if (DBL_EQL(l->p1->x, l->p2->x)) {
+    rval = new_point(-p->x + (2 * l->p1->x),
+		     p->y);
+  } else {
+    gdouble line_k1 = (l->p2->y - l->p1->y) / (l->p2->x - l->p1->x);
+    gdouble line_k2 = l->p1->y - (line_k1 * l->p1->x);
+
+    gdouble normal_x_coord = line_k1;
+    gdouble normal_y_coord = -1.0;
+    gdouble normal_abs = sqrt((normal_x_coord * normal_x_coord) + (normal_y_coord * normal_y_coord));
+
+    // here we translate the point by subtracting line_k2 from p->y to force the projection to be against the line as it crosses origo
+    gdouble projection_factor = ((p->x * normal_x_coord + (p->y - line_k2) * normal_y_coord) / 
+				 (normal_abs * normal_abs));
+    gdouble projection_x_coord = normal_x_coord * projection_factor;
+    gdouble projection_y_coord = normal_y_coord * projection_factor;
+
+    rval = new_point(p->x - (2 * projection_x_coord),
+		     p->y - (2 * projection_y_coord));
+  }
+  return rval;
+}
+
+static VALUE
+rb_line_mirror_point(Line *me, Point *p) {
+  Point *rval = line_mirror_point(me, p);
+  return RB_POINT(rval, CLASS(p->rbPoint));
+}
+
+static VALUE 
+rb_line_mirror_line(Line *me, Line *o) {
+  Point *p1 = line_mirror_point(me, o->p1);
+  Point *p2 = line_mirror_point(me, o->p2);
+  Line *rval;
+  RB_POINT(p1, CLASS(o->p1->rbPoint));
+  RB_POINT(p2, CLASS(o->p2->rbPoint));
+  rval = new_line_with_points(p1, p2);
+  return RB_LINE(rval, CLASS(o->rbLine));
+}
+
+VALUE
+rb_line_mirror(VALUE self, VALUE other) {
+  Line *me;
+  if (LINE_P(other)) {
+    Line *o;
+    LINE(self, me);
+    LINE(other, o);
+    return rb_line_mirror_line(me, o);
+  } else if (POINT_P(other)) {
+    Point *o;
+    LINE(self, me);
+    POINT(other, o);
+    return rb_line_mirror_point(me, o);
+  } else {
+    rb_raise(rb_eTypeError, "Argument to %s#mirror have to be either Geo::Line or Geo::Point.", rb_obj_classname(self));
+  }
 }
 
 VALUE
@@ -598,6 +661,3 @@ line_hash(gconstpointer l) {
   return (guint) (line->p1->x + line->p1->y + line->p2->x + line->p2->y);
 }
 
-void
-init_line_o() {
-}

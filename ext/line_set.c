@@ -374,8 +374,10 @@ rb_line_set_closest_intersection(VALUE self, VALUE l) {
 VALUE
 rb_line_set_clone(VALUE self) {
   GeoSet *me;
+  GeoSet *rval;
   GEO_SET(self, me);
-  return RB_LINE_SET(geo_set_clone(me), CLASS(self));
+  rval = geo_set_clone(me);
+  return RB_LINE_SET(rval, CLASS(self));
 }
 
 VALUE
@@ -520,9 +522,5 @@ rb_line_set_reindex(VALUE self) {
   GeoSet *me;
   GEO_SET(self, me);
   return GBOOL2RB(line_set_reindex(me));
-}
-
-void
-init_line_set_o() {
 }
 

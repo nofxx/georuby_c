@@ -86,8 +86,10 @@ rb_point_set_each(VALUE self) {
 VALUE
 rb_point_set_clone(VALUE self) {
   GeoSet *me;
+  GeoSet *rval;
   GEO_SET(self, me);
-  return RB_POINT_SET(geo_set_clone(me), CLASS(self));
+  rval = geo_set_clone(me);
+  return RB_POINT_SET(rval, CLASS(self));
 }
 
 gpointer
@@ -109,6 +111,3 @@ geo_set_each_structure_having_common_segment_id_with_point_until(GeoSet *set,
   return rval;
 }
 
-void
-init_point_set_o() {
-}

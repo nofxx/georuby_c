@@ -211,8 +211,10 @@ rb_triangle_set_contains(VALUE self, VALUE p) {
 VALUE
 rb_triangle_set_clone(VALUE self) {
   GeoSet *me;
+  GeoSet *rval;
   GEO_SET(self, me);
-  return RB_TRIANGLE_SET(geo_set_clone(me), CLASS(self));
+  rval = geo_set_clone(me);
+  return RB_TRIANGLE_SET(rval, CLASS(self));
 }
 
 VALUE
@@ -436,6 +438,3 @@ rb_triangle_set_containers(VALUE self, VALUE p) {
   return rval;
 }
 
-void
-init_triangle_set_o() {
-}
