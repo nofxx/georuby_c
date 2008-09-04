@@ -52,6 +52,9 @@ extern "C" {
     rb_point_set = rb_define_class_under(rb_geo,
 					  "PointSet",
 					  rb_cObject);
+	  rb_distance = rb_define_class_under(rb_geo,
+	          "Distance",
+            rb_cObject);
 
     rb_define_alloc_func(rb_triangle_set, rb_triangle_set_alloc);
     rb_define_method(rb_triangle_set, "<<", rb_triangle_set_insert, 1);
@@ -78,6 +81,9 @@ extern "C" {
     rb_define_method(rb_triangle_set, "indexed", rb_geo_set_get_indexed, 0);
     rb_define_method(rb_triangle_set, "indexed=", rb_geo_set_set_indexed, 1);
     rb_define_method(rb_triangle_set, "containers", rb_triangle_set_containers, 1);
+
+    rb_define_alloc_func(rb_distance, rb_distance_alloc);
+    rb_define_method(rb_distance, "haversine", rb_distance_insert, 1);
 
     rb_define_alloc_func(rb_point_set, rb_point_set_alloc);
     rb_define_method(rb_point_set, "<<", rb_point_set_insert, 1);

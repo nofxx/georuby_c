@@ -107,18 +107,5 @@ describe Point do
     
   end  
   
-  describe "C extensions" do
-    include Native
-    # before(:each) do
-    #   
-    # end
-    it "should create a native C point directly" do
-      @point = Native::Point.new(1,2)
-      @point.should be_instance_of(Point)
-    end
-    
-    
-    
-    
-  end
+
 end

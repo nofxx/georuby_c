@@ -529,4 +529,3 @@ rb_geo_set_height(VALUE self) {
   GEO_SET(self, set);
   return rb_float_new(GEO_SET_HEIGHT(set));
 }
-
