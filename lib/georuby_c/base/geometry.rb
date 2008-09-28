@@ -1,6 +1,6 @@
 module GeorubyC#:nodoc:
   module Base
-    #arbitrary default SRID
+    #arbitrary default SRID 
     @@srid=4326
         
     #Root of all geometric data classes.
@@ -27,9 +27,6 @@ module GeorubyC#:nodoc:
           end
         end
       end
-
-      def deg2rad(d);  (d/180.0) * Math::PI;  end
-      def rad2deg(r);  (r*180.0) / Math::PI;  end
       
       #to be implemented in subclasses
       def bounding_box

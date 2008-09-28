@@ -10,4 +10,6 @@ describe LineString do
   end
   
   
+  
+  
 end

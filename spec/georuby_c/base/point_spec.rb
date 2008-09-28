@@ -12,7 +12,7 @@ describe Point do
   describe "Export Formats" do
   
     before(:each) do
-      @point = Point.from_x_y(-11.2431,32.3141)
+      @point = Point.from_x_y( -11.2431, 32.3141 )
     end
   
     it "should print nicely" do
@@ -80,7 +80,7 @@ describe Point do
     end
     
     it "should instantiate a point from polar coordinates" do
-      @point = Point.from_polar_r_t(1.4142,45)
+      @point = Point.from_r_t(1.4142,45)
       @point.y.should be_close(1, 0.00001)
       @point.x.should be_close(1, 0.00001)
     end

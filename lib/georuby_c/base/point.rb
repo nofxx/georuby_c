@@ -4,12 +4,18 @@ module GeorubyC
   module Base
     #Represents a point. It is in 3D if the Z coordinate is not +nil+.
     class Point < Geometry
-            
+      DEG2RAD = 0.0174532925199433   
+
       attr_accessor :x,:y,:z,:m
+      attr_accessor :r,:t # radium and theta - for polar cordinates
+      
       #if you prefer calling the coordinates lat and lon (or lng, for GeoKit compatibility)
       alias :lon :x
       alias :lng :x
       alias :lat :y
+      alias :rad :r
+      alias :tet :t
+      alias :tetha :t
       
       def initialize(srid=@@srid,with_z=false,with_m=false)
         super(srid,with_z,with_m)
@@ -49,11 +55,10 @@ module GeorubyC
       #Assumes x is the lon and y the lat, in degrees (Changed in version 1.1). 
       #The user has to make sure using this distance makes sense (ie she should be in latlon coordinates)
       def spherical_distance(point,r=6370997.0)
-        deg_to_rad = 0.0174532925199433        
-        radlat_from = lat * deg_to_rad
-        radlat_to = point.lat * deg_to_rad        
-        dlat = (point.lat - lat) * deg_to_rad / 2
-        dlon = (point.lon - lon) * deg_to_rad / 2
+        radlat_from = lat * DEG2RAD
+        radlat_to = point.lat * DEG2RAD        
+        dlat = (point.lat - lat) * DEG2RAD / 2
+        dlon = (point.lon - lon) * DEG2RAD / 2
  
         a = Math.sin(dlat)**2 + Math.cos(radlat_from) * Math.cos(radlat_to) * Math.sin(dlon)**2
         c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
@@ -64,14 +69,12 @@ module GeorubyC
       #a is the semi-major axis (equatorial radius) of the ellipsoid
       #b is the semi-minor axis (polar radius) of the ellipsoid
       #Their values by default are set to the ones of the WGS84 ellipsoid
-      def ellipsoidal_distance(point, a = 6378137.0, b = 6356752.3142)
-        deg_to_rad = 0.0174532925199433
-        
+      def ellipsoidal_distance(point, a = 6378137.0, b = 6356752.3142)        
         f = (a-b) / a
-        l = (point.lon - lon) * deg_to_rad
+        l = (point.lon - lon) * DEG2RAD
         
-        u1 = Math.atan((1-f) * Math.tan(lat * deg_to_rad ))
-        u2 = Math.atan((1-f) * Math.tan(point.lat * deg_to_rad))
+        u1 = Math.atan((1-f) * Math.tan(lat * DEG2RAD ))
+        u2 = Math.atan((1-f) * Math.tan(point.lat * DEG2RAD))
         sinU1 = Math.sin(u1)
         cosU1 = Math.cos(u1)
         sinU2 = Math.sin(u2)
@@ -190,8 +193,7 @@ module GeorubyC
       
       #Polar stuff
       #http://www.engineeringtoolbox.com/converting-cartesian-polar-coordinates-d_1347.html
-      #http://rcoordinate.rubyforge.org/svn/point.rb
-      
+      #http://rcoordinate.rubyforge.org/svn/point.rb      
       #polar distance
       def r
         Math.sqrt(x**2 + y**2)
@@ -199,12 +201,12 @@ module GeorubyC
 
       #outputs theta in degrees
       def t
-        if x == 0
+        if x.zero?
     			y < 0 ? 3 * Math::PI / 2 :	Math::PI / 2
     		else
     			t = Math.atan(y/x)
     		  t += 2 * Math::PI if t > 0
-    		  rad2deg(t)
+    		  t / DEG2RAD
     		end
       end      
       
@@ -266,9 +268,8 @@ module GeorubyC
       
       #creates a point using polar coordinates 
       #r and theta(degrees)
-      def self.from_polar_r_t(r,t,srid=@@srid)
-        deg2rad = 0.0174532925199433        
-        t *= deg2rad
+      def self.from_r_t(r,t,srid=@@srid)
+        t *= DEG2RAD
         x = r * Math.cos(t)
         y = r * Math.sin(t)
         point= new(srid)
@@ -281,6 +282,7 @@ module GeorubyC
         alias :from_lon_lat_z :from_x_y_z
         alias :from_lon_lat_m :from_x_y_m
         alias :from_lon_lat_z_m :from_x_y_z_m
+        alias :from_rad_tet :from_r_t
       end
     end
   end

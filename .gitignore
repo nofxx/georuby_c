@@ -7,3 +7,5 @@ mkmf.log
 Makefile
 coverage/*
 doc/*
+ext/*.bundle
+ext/*.so
