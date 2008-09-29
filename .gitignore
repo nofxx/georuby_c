@@ -9,3 +9,4 @@ coverage/*
 doc/*
 ext/*.bundle
 ext/*.so
+ext/Makefile
