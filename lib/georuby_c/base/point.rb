@@ -5,9 +5,8 @@ module GeorubyC
     #Represents a point. It is in 3D if the Z coordinate is not +nil+.
     class Point < Geometry
       DEG2RAD = 0.0174532925199433   
-
       attr_accessor :x,:y,:z,:m
-      attr_accessor :r,:t # radium and theta - for polar cordinates
+      attr_reader :r, :t # radium and theta
       
       #if you prefer calling the coordinates lat and lon (or lng, for GeoKit compatibility)
       alias :lon :x
@@ -194,20 +193,18 @@ module GeorubyC
       #Polar stuff
       #http://www.engineeringtoolbox.com/converting-cartesian-polar-coordinates-d_1347.html
       #http://rcoordinate.rubyforge.org/svn/point.rb      
-      #polar distance
-      def r
-        Math.sqrt(x**2 + y**2)
-      end      
-
-      #outputs theta in degrees
-      def t
+      # outputs radium 
+      def r;        Math.sqrt(x**2 + y**2);      end      
+      
+      #outputs theta 
+      def t(rad=false)
         if x.zero?
-    			y < 0 ? 3 * Math::PI / 2 :	Math::PI / 2
+    			t = y < 0 ? 3 * Math::PI / 2 :	Math::PI / 2
     		else
     			t = Math.atan(y/x)
     		  t += 2 * Math::PI if t > 0
-    		  t / DEG2RAD
     		end
+  		  rad ? t : t / DEG2RAD
       end      
       
       #outputs an array containing polar distance and theta

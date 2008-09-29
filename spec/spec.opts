@@ -1,4 +1,6 @@
 --colour
---format progress
---loadby mtime
---reverse
+--format
+profile
+--timeout
+20
+--diff

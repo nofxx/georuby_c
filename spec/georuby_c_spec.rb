@@ -12,12 +12,12 @@ describe "Place your specs here" do
   
   it "should instantiate Point" do
     @point = Point.new
-    @point.class.should eql(Point)
+    @point.should be_instance_of(Point)
   end
   
   it "should instantiate Line" do
-    @point = LineString.new
-    @point.class.should eql(LineString)
+    @line = LineString.new
+    @line.should be_instance_of(LineString)
   end
   
 end

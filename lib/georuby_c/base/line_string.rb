@@ -22,6 +22,7 @@ module GeorubyC
         #a bit naive...
         @points.first == @points.last
       end
+      alias :closed? :is_closed
 
       #Bounding box in 2D/3D. Returns an array of 2 points
       def bounding_box
@@ -148,16 +149,13 @@ module GeorubyC
       end
       
       def kml_poslist(options) #:nodoc: 
-         pos_list = if options[:allow_z]
+        pos_list = if options[:allow_z]
            map {|point| "#{point.x},#{point.y},#{options[:fixed_z] || point.z || 0}" }
         else
           map {|point| "#{point.x},#{point.y}" }
         end
-	if(options[:reverse])
-	   pos_list.reverse.join(" ")
-	else
-	   pos_list.join(" ")
-	end
+        pos_list.reverse! if(options[:reverse])
+        pos_list.join(" ")
       end
       
       #Creates a new line string. Accept an array of points as argument
@@ -170,7 +168,7 @@ module GeorubyC
       #Creates a new line string. Accept a sequence of points as argument : ((x,y)...(x,y))
       def self.from_coordinates(points,srid=@@srid,with_z=false,with_m=false)
         line_string = new(srid,with_z,with_m)
-        line_string.concat( points.collect{|point_coords| Point.from_coordinates(point_coords,srid,with_z,with_m)  } )
+        line_string.concat( points.map {|p| Point.from_coordinates(p,srid,with_z,with_m) } )
         line_string
       end
 

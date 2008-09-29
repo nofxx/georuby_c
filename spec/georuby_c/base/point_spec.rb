@@ -9,47 +9,10 @@ describe Point do
     violated unless @point
   end
   
-  describe "Export Formats" do
-  
-    before(:each) do
-      @point = Point.from_x_y( -11.2431, 32.3141 )
-    end
-  
-    it "should print nicely" do
-      @point.text_representation.should eql("-11.2431 32.3141")
-    end
-    
-    it "should have a nice bounding box" do
-      @point.bounding_box.should be_instance_of(Array)
-      @point.bounding_box.length.should eql(2)
-      @point.bounding_box.each do |point|
-        point.x.should eql(@point.x)
-        point.y.should eql(@point.y)
-      end
-    end
-    
-    it "should print as kml too" do
-      @point.kml_representation.should eql("<Point>\n<coordinates>-11.2431,32.3141</coordinates>\n</Point>\n")      
-    end
-    
-    it "should print as georss" do
-      @point.georss_simple_representation('hey').should eql("<georss:point>32.3141 -11.2431</georss:point>\n")      
-    end
-    
-    it "should print de distance in polar coords" do
-      @point.r.should be_close(34.214154, 0.00001)
-    end
-    
-    it "should print theta" do
-      @point.t.should be_close(-70.815593647873, 0.0001)
-    end
-    
-    it "should output as polar" do
-      @point.as_polar.should be_instance_of(Array)
-      @point.as_polar.length.should eql(2)
-    end
-    
-  end
+  it "should have binary_geometry_type 2" do
+    @point.binary_geometry_type.should eql(1)
+  end  
+   
   describe "Instantiation" do
     
     it "should instantiate a 2d point" do
@@ -107,5 +70,50 @@ describe Point do
     
   end  
   
+  describe "Export Formats" do
+
+     before(:each) do
+       @point = Point.from_x_y( -11.2431, 32.3141 )
+     end
+
+     it "should print nicely" do
+       @point.text_representation.should eql("-11.2431 32.3141")
+     end
+
+     it "should have a nice bounding box" do
+       @point.bounding_box.should be_instance_of(Array)
+       @point.bounding_box.length.should eql(2)
+       @point.bounding_box.each do |point|
+         point.x.should eql(@point.x)
+         point.y.should eql(@point.y)
+       end
+     end
+
+     it "should print as kml too" do
+       @point.kml_representation.should eql("<Point>\n<coordinates>-11.2431,32.3141</coordinates>\n</Point>\n")      
+     end
+
+     it "should print as georss" do
+       @point.georss_simple_representation('hey').should eql("<georss:point>32.3141 -11.2431</georss:point>\n")      
+     end
+
+     it "should print de distance in polar coords" do
+       @point.r.should be_close(34.214154, 0.00001)
+     end
+
+     it "should print theta as degrees" do
+       @point.t.should be_close(-70.815593647873, 0.0001)
+     end
+     
+     it "should print theta as radians" do
+       @point.t(:rad).should be_close(-1.23596527090977, 0.0001)
+     end
+
+     it "should output as polar" do
+       @point.as_polar.should be_instance_of(Array)
+       @point.as_polar.length.should eql(2)
+     end
+
+   end
 
 end

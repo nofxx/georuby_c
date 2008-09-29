@@ -1,3 +1,6 @@
+lib_path = File.expand_path("#{File.dirname(__FILE__)}/../../lib")
+$LOAD_PATH.unshift lib_path unless $LOAD_PATH.include?(lib_path)
+
 begin
   require 'spec'
 rescue LoadError
@@ -6,7 +9,12 @@ rescue LoadError
   require 'spec'
 end
 
-$:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'georuby_c'
 include GeorubyC
 include Base
+
+Spec::Runner.configure do |config|
+
+  
+  
+end
