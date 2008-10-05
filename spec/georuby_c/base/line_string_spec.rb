@@ -83,4 +83,12 @@ describe LineString do
       @line.kml_poslist({:reverse => true}).should eql("6,6 5,5 4,4 3,3 2,2 1,1 0,0")
     end
   end
+  
+  require File.dirname(__FILE__) + '/../spec_helper'
+
+  describe "controller" do
+    it "should print the lenght in meters" do
+      pending
+    end
+  end
 end
