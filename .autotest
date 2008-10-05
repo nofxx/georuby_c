@@ -19,12 +19,16 @@ Autotest.add_hook :initialize do |at|
     filename
   end
 
- # at.add_mapping(%r{^lib/georuby_c/(.+)\.rb$}) do |_,match|
- #   [ "spec/unit/#{match[1]}_spec.rb" ] +
- #           at.files_matching(%r{^spec/integration/.+_spec\.rb$})
- # end
+#  at.add_mapping(%r{^lib/(.+)\.rb$}) do |filename,_|
+#    filename
+#  end
 
-  # at.add_mapping(%r{^spec/spec_helper\.rb$}) do
-  #    at.files_matching(%r{^spec/.+_spec\.rb$})
-  #end
+  at.add_mapping(%r{^lib/georuby_c/base/(.+)\.rb$}) do |_,match|
+    [ "spec/georuby_c/base/#{match[1]}_spec.rb" ] +
+            at.files_matching(%r{^spec/integration/.+_spec\.rb$})
+  end
+
+   at.add_mapping(%r{^spec/spec_helper\.rb$}) do
+      at.files_matching(%r{^spec/.+_spec\.rb$})
+  end
 end

@@ -4,10 +4,10 @@ module GeorubyC
   module Base
     #Represents a point. It is in 3D if the Z coordinate is not +nil+.
     class Point < Geometry
-      DEG2RAD = 0.0174532925199433   
+      DEG2RAD = 0.0174532925199433
       attr_accessor :x,:y,:z,:m
       attr_reader :r, :t # radium and theta
-      
+
       #if you prefer calling the coordinates lat and lon (or lng, for GeoKit compatibility)
       alias :lon :x
       alias :lng :x
@@ -15,7 +15,7 @@ module GeorubyC
       alias :rad :r
       alias :tet :t
       alias :tetha :t
-      
+
       def initialize(srid=@@srid,with_z=false,with_m=false)
         super(srid,with_z,with_m)
         @x = @y = 0.0
@@ -30,7 +30,7 @@ module GeorubyC
         self
       end
       alias :set_lon_lat_z :set_x_y_z
-      
+
       #sets all coordinates of a 2D point in one call
       def set_x_y(x,y)
         @x=x
@@ -38,27 +38,24 @@ module GeorubyC
         self
       end
       alias :set_lon_lat :set_x_y
-      
-      #Return a point using the native C lib
-      def to_c
-        Native::Point.new(x,y)
-      end
-      
-      #Return the distance between the 2D points (ie taking care only of the x and y coordinates), assuming 
+
+
+
+      #Return the distance between the 2D points (ie taking care only of the x and y coordinates), assuming
       #the points are in projected coordinates. Euclidian distance in whatever unit the x and y ordinates are.
       def euclidian_distance(point)
         Math.sqrt((point.x - x)**2 + (point.y - y)**2)
       end
 
-      #Returns the sperical distance in meters, with a radius of 6471000m, with the haversine law. 
-      #Assumes x is the lon and y the lat, in degrees (Changed in version 1.1). 
+      #Returns the sperical distance in meters, with a radius of 6471000m, with the haversine law.
+      #Assumes x is the lon and y the lat, in degrees (Changed in version 1.1).
       #The user has to make sure using this distance makes sense (ie she should be in latlon coordinates)
       def spherical_distance(point,r=6370997.0)
         radlat_from = lat * DEG2RAD
-        radlat_to = point.lat * DEG2RAD        
+        radlat_to = point.lat * DEG2RAD
         dlat = (point.lat - lat) * DEG2RAD / 2
         dlon = (point.lon - lon) * DEG2RAD / 2
- 
+
         a = Math.sin(dlat)**2 + Math.cos(radlat_from) * Math.cos(radlat_to) * Math.sin(dlon)**2
         c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
         r * c
@@ -68,34 +65,34 @@ module GeorubyC
       #a is the semi-major axis (equatorial radius) of the ellipsoid
       #b is the semi-minor axis (polar radius) of the ellipsoid
       #Their values by default are set to the ones of the WGS84 ellipsoid
-      def ellipsoidal_distance(point, a = 6378137.0, b = 6356752.3142)        
+      def ellipsoidal_distance(point, a = 6378137.0, b = 6356752.3142)
         f = (a-b) / a
         l = (point.lon - lon) * DEG2RAD
-        
+
         u1 = Math.atan((1-f) * Math.tan(lat * DEG2RAD ))
         u2 = Math.atan((1-f) * Math.tan(point.lat * DEG2RAD))
         sinU1 = Math.sin(u1)
         cosU1 = Math.cos(u1)
         sinU2 = Math.sin(u2)
         cosU2 = Math.cos(u2)
-  
+
         lambda = l
         lambdaP = 2 * Math::PI
         iterLimit = 20
-        
+
         while (lambda-lambdaP).abs > 1e-12 && --iterLimit>0
           sinLambda = Math.sin(lambda)
           cosLambda = Math.cos(lambda)
           sinSigma = Math.sqrt((cosU2*sinLambda) * (cosU2*sinLambda) + (cosU1*sinU2-sinU1*cosU2*cosLambda) * (cosU1*sinU2-sinU1*cosU2*cosLambda))
-          
+
           return 0 if sinSigma == 0 #coincident points
-          
+
           cosSigma = sinU1*sinU2 + cosU1*cosU2*cosLambda
           sigma = Math.atan2(sinSigma, cosSigma)
           sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma
           cosSqAlpha = 1 - sinAlpha*sinAlpha
           cos2SigmaM = cosSigma - 2*sinU1*sinU2/cosSqAlpha
-          
+
           cos2SigmaM = 0 if (cos2SigmaM.nan?) #equatorial line: cosSqAlpha=0
 
           c = f/16*cosSqAlpha*(4+f*(4-3*cosSqAlpha))
@@ -108,10 +105,10 @@ module GeorubyC
         a_bis = 1 + uSq/16384*(4096+uSq*(-768+uSq*(320-175*uSq)))
         b_bis = uSq/1024 * (256+uSq*(-128+uSq*(74-47*uSq)))
         deltaSigma = b_bis * sinSigma*(cos2SigmaM + b_bis/4*(cosSigma*(-1+2*cos2SigmaM*cos2SigmaM)- b_bis/6*cos2SigmaM*(-3+4*sinSigma*sinSigma)*(-3+4*cos2SigmaM*cos2SigmaM)))
-      
+
         b*a_bis*(sigma-deltaSigma)
       end
-            
+
       #Bounding box in 2D/3D. Returns an array of 2 points
       def bounding_box
         unless with_z
@@ -124,7 +121,7 @@ module GeorubyC
       def m_range
         [@m,@m]
       end
-      
+
       #tests the equality of the position of points + m
       def ==(other_point)
         if other_point.class != self.class
@@ -133,7 +130,7 @@ module GeorubyC
           @x == other_point.x and @y == other_point.y and @z == other_point.z and @m == other_point.m
         end
       end
-      
+
       #binary representation of a point. It lacks some headers to be a valid EWKB representation.
       def binary_representation(allow_z=true,allow_m=true) #:nodoc:
         bin_rep = [@x,@y].pack("EE")
@@ -145,7 +142,7 @@ module GeorubyC
       def binary_geometry_type#:nodoc:
         1
       end
-      
+
       #text representation of a point
       def text_representation(allow_z=true,allow_m=true) #:nodoc:
         tex_rep = "#{@x} #{@y}"
@@ -181,7 +178,7 @@ module GeorubyC
       #outputs the geometry in kml format : options are <tt>:id</tt>, <tt>:tesselate</tt>, <tt>:extrude</tt>,
       #<tt>:altitude_mode</tt>. If the altitude_mode option is not present, the Z (if present) will not be output (since
       #it won't be used by GE anyway: clampToGround is the default)
-      def kml_representation(options = {}) #:nodoc: 
+      def kml_representation(options = {}) #:nodoc:
         result = "<Point#{options[:id_attr]}>\n"
         result += options[:geom_data] if options[:geom_data]
         result += "<coordinates>#{x},#{y}"
@@ -189,14 +186,14 @@ module GeorubyC
         result += "</coordinates>\n"
         result += "</Point>\n"
       end
-      
+
       #Polar stuff
       #http://www.engineeringtoolbox.com/converting-cartesian-polar-coordinates-d_1347.html
-      #http://rcoordinate.rubyforge.org/svn/point.rb      
-      # outputs radium 
-      def r;        Math.sqrt(x**2 + y**2);      end      
-      
-      #outputs theta 
+      #http://rcoordinate.rubyforge.org/svn/point.rb
+      # outputs radium
+      def r;        Math.sqrt(x**2 + y**2);      end
+
+      #outputs theta
       def t(rad=false)
         if x.zero?
     			t = y < 0 ? 3 * Math::PI / 2 :	Math::PI / 2
@@ -205,13 +202,13 @@ module GeorubyC
     		  t += 2 * Math::PI if t > 0
     		end
   		  rad ? t : t / DEG2RAD
-      end      
-      
+      end
+
       #outputs an array containing polar distance and theta
       def as_polar
         [r,t]
-      end  
-      
+      end
+
       #creates a point from an array of coordinates
       def self.from_coordinates(coords,srid=@@srid,with_z=false,with_m=false)
         if ! (with_z or with_m)
@@ -221,7 +218,7 @@ module GeorubyC
         elsif with_z
           from_x_y_z(coords[0],coords[1],coords[2],srid)
         else
-          from_x_y_m(coords[0],coords[1],coords[2],srid) 
+          from_x_y_m(coords[0],coords[1],coords[2],srid)
         end
       end
 
@@ -230,13 +227,13 @@ module GeorubyC
         point= new(srid)
         point.set_x_y(x,y)
       end
-      
+
       #creates a point from the X, Y and Z coordinates
       def self.from_x_y_z(x,y,z,srid=@@srid)
         point= new(srid,true)
         point.set_x_y_z(x,y,z)
       end
-      
+
 
       #creates a point from the X, Y and M coordinates
       def self.from_x_y_m(x,y,m,srid=@@srid)
@@ -244,26 +241,26 @@ module GeorubyC
         point.m=m
         point.set_x_y(x,y)
       end
-      
+
       #creates a point from the X, Y, Z and M coordinates
       def self.from_x_y_z_m(x,y,z,m,srid=@@srid)
         point= new(srid,true,true)
         point.m=m
         point.set_x_y_z(x,y,z)
       end
-      
+
       #creates a point using degrees and heading
-      # x coord, x heading, y coord, y heading 
+      # x coord, x heading, y coord, y heading
       def self.from_x_y_xl_yl(x,xl,y,yl,srid=@@srid)
-        x = x[0..2].to_i + (x[3..-1].to_f/60)    
-        y = y[0..1].to_i + (y[2..-1].to_f/60)        
+        x = x[0..2].to_i + (x[3..-1].to_f/60)
+        y = y[0..1].to_i + (y[2..-1].to_f/60)
         x *= -1 if xl == 'W'
         y *= -1 if yl == 'S'
         point= new(srid)
         point.set_x_y(x,y)
       end
-      
-      #creates a point using polar coordinates 
+
+      #creates a point using polar coordinates
       #r and theta(degrees)
       def self.from_r_t(r,t,srid=@@srid)
         t *= DEG2RAD
@@ -272,7 +269,7 @@ module GeorubyC
         point= new(srid)
         point.set_x_y(x,y)
       end
-      
+
       #aliasing the constructors in case you want to use lat/lon instead of y/x
       class << self
         alias :from_lon_lat :from_x_y

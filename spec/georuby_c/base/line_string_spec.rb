@@ -1,9 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 module LineSpecHelper
-  def mock_points
+  def mock_points(num)
 #    @point = mock(Point, :x => 1.0, :y => 2.0)
-    Array.new(7) { |i| mock_point(i,i) }
+    Array.new(num) { |i| mock_point(i,i) }
   end
 
   def mock_point(x=1,y=2)
@@ -13,6 +13,7 @@ end
 
 describe LineString do
   include LineSpecHelper
+
   before(:each) do
     @line = LineString.from_points([mock(Point)])
   end
@@ -33,7 +34,8 @@ describe LineString do
     @line.points.should be_instance_of(Array)
   end
 
-  describe ", from coordinates" do
+  describe "> Coordinates" do
+
     before(:each) do
       Point.should_receive(:from_coordinates).
         exactly(4).with(anything, 4326, false, false).and_return(mock_point)
@@ -43,12 +45,13 @@ describe LineString do
     it "should instantiate from coordinates" do
       @line.points.length.should eql(4)
     end
+
   end
 
-  describe ", Instantiated" do
+  describe "> Instantiated" do
 
     before(:each) do
-      @line = LineString.from_points(mock_points)
+      @line = LineString.from_points(mock_points(7))
     end
 
     it "should be closed if the last point equals the first" do
@@ -84,10 +87,24 @@ describe LineString do
     end
   end
 
+  describe "> Distances..." do
+    before(:each) do
+      @p1 = mock(Point)
+      @p2 = mock(Point)
+      @p3 = mock(Point)
+      @line = LineString.from_points([@p1,@p2,@p3])
+    end
 
-  describe "controller" do
-    it "should print the lenght in meters" do
-      pending
+    it "should print the length with haversine" do
+      @p1.should_receive(:spherical_distance).with(@p2).and_return(10)
+      @p2.should_receive(:spherical_distance).with(@p3).and_return(10)
+      @line.spherical_distance.should eql(20)
+    end
+
+    it "should print lenght as euclidian" do
+      @p1.should_receive(:euclidian_distance).with(@p2).and_return(10)
+      @p2.should_receive(:euclidian_distance).with(@p3).and_return(10)
+      @line.euclidian_distance.should eql(20)
     end
   end
 end

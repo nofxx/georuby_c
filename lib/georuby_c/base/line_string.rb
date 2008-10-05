@@ -62,6 +62,27 @@ module GeorubyC
         end
       end
 
+     #call to native Geo intersect, return true or false
+      def intersects?(other_line_string)
+
+      end
+
+      def spherical_distance
+        total = 0
+        @points.each_with_index do |p,i|
+          total += p.spherical_distance(@points[i+1]) if @points[i+1]
+        end
+        total
+      end
+
+      def euclidian_distance
+        total = 0
+        @points.each_with_index do |p,i|
+          total += p.euclidian_distance(@points[i+1]) if @points[i+1]
+        end
+        total
+      end
+
       #Tests the equality of line strings
       def ==(other_line_string)
         if(other_line_string.class != self.class or
@@ -77,19 +98,6 @@ module GeorubyC
         end
       end
 
-      #call to native Geo intersect, return true or false
-      def intersects?(other_line_string)
-
-      end
-
-      def to_c
-        f = []
-        points.each do |p|
-         f << Native::LineString.new(p[0],p[1])
-         next
-        end
-        f
-      end
       #Binary representation of a line string
       def binary_representation(allow_z=true,allow_m=true) #:nodoc:
         rep = [length].pack("V")
