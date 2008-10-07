@@ -194,14 +194,17 @@ module GeorubyC
       def r;        Math.sqrt(x**2 + y**2);      end
 
       #outputs theta
-      def t(rad=false)
-        if x.zero?
-    			t = y < 0 ? 3 * Math::PI / 2 :	Math::PI / 2
+      def theta_rad
+        if @x.zero?
+    			@y < 0 ? 3 * Math::PI / 2 : Math::PI / 2
     		else
-    			t = Math.atan(y/x)
-    		  t += 2 * Math::PI if t > 0
+    			th = Math.atan(@y/@x)
+    		  th += 2 * Math::PI if r > 0
     		end
-  		  rad ? t : t / DEG2RAD
+      end
+
+      def theta_deg
+        theta_rad / DEG2RAD
       end
 
       #outputs an array containing polar distance and theta

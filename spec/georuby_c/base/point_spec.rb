@@ -57,15 +57,18 @@ describe Point do
     end
 
     it "and a 3th grade child should calculate euclidian distance" do
-      @p1.euclidian_distance(@p2).should be_close(1.4142135623731, 0.00000001)
+      @p1.euclidian_distance(@p2).
+        should be_close(1.4142135623731, 0.00000001)
     end
 
     it "should calculate spherical distance" do
-      @p1.spherical_distance(@p2).should be_close(157225.358003181,0.00000001)
+      @p1.spherical_distance(@p2).
+        should be_close(157225.358003181,0.00000001)
     end
 
     it "should calculate ellipsoidal distance" do
-      @p1.ellipsoidal_distance(@p2).should be_close(156876.149400742, 0.00000001)
+      @p1.ellipsoidal_distance(@p2).
+        should be_close(156876.149400742, 0.00000001)
     end
 
   end
@@ -81,8 +84,7 @@ describe Point do
      end
 
      it "should have a nice bounding box" do
-       @point.bounding_box.should be_instance_of(Array)
-       @point.bounding_box.length.should eql(2)
+       @point.should have(2).bounding_box
        @point.bounding_box.each do |point|
          point.x.should eql(@point.x)
          point.y.should eql(@point.y)
@@ -97,21 +99,21 @@ describe Point do
        @point.georss_simple_representation('hey').should eql("<georss:point>32.3141 -11.2431</georss:point>\n")
      end
 
-     it "should print de distance in polar coords" do
+     it "should print r (polar coords)" do
        @point.r.should be_close(34.214154, 0.00001)
      end
 
      it "should print theta as degrees" do
-       @point.t.should be_close(-70.815593647873, 0.0001)
+       @point.theta_deg.should be_close(289.184406352127, 0.0001)
      end
 
      it "should print theta as radians" do
-       @point.t(:rad).should be_close(-1.23596527090977, 0.0001)
+       @point.theta_rad.should be_close(5.04722003626982, 0.0001)
      end
 
      it "should output as polar" do
        @point.as_polar.should be_instance_of(Array)
-       @point.as_polar.length.should eql(2)
+       @point.should have(2).as_polar #.length.should eql(2)
      end
 
    end
