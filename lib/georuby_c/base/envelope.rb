@@ -4,10 +4,10 @@ module GeorubyC
     #Contains the bounding box of a geometry
     class Envelope
       attr_accessor :lower_corner, :upper_corner
-      attr_accessor :srid, :with_z
+      attr_accessor :srid, :with_z, :zoom
 
       #Creates a enw Envelope with +lower_corner+ as the first element of the corners array and +upper_corner+ as the second element
-      def initialize(srid = DEFAULT_SRID, with_z = false)
+      def initialize(srid = @@srid, with_z = false)
         @srid = srid
         @with_z = with_z
       end
@@ -29,10 +29,42 @@ module GeorubyC
         e.extend!(envelope)
         e
       end
+#  def bounding_box(markers)
+#    max_lat, max_lon, min_lat, min_lon = -Float::MAX, -Float::MAX, Float::MAX, Float::MAX
+#    markers.each do |marker|
+#      coord = marker.point
+#      max_lat = coord.lat if coord.lat > max_lat
+#      min_lat = coord.lat if coord.lat < min_lat
+#      max_lon = coord.lng if coord.lng > max_lon
+#      min_lon = coord.lng if coord.lng < min_lon
+#    end
+#    min_point = Point.from_x_y(min_lat,min_lon)
+#    max_point = Point.from_x_y(max_lat,max_lon)
+
+#    end
+#    centrelat = (max_lat + min_lat)/2
+#    centrelng = (max_lon + min_lon)/2
+#    # logger.info("distance[#{distance}],zoom[#{zoom}]")
+#    #return GLatLngBounds.new(GLatLng.new(min_point),GLatLng.new(max_point)), [centrelat,centrelng], zoom
+#    return [centrelat,centrelng], zoom
 
       #Sends back the center of the envelope
       def center
         Point.from_x_y((lower_corner.x + upper_corner.x)/2,(lower_corner.y + upper_corner.y)/2)
+      end
+
+      #Zoom level
+      def zoom
+        distance = lower_corner.spherical_distance(upper_corner)/10000
+        @zoom = case distance
+        when 150..9000  then 5
+        when 80..149    then 6
+        when 50..79     then 7
+        when 20..49     then 8
+        when 10..19     then 9
+        when 5..9       then 10
+        else 13
+        end
       end
 
       #Tests the equality of line strings
@@ -116,14 +148,15 @@ module GeorubyC
       end
 
       #Creates a new envelope. Accept an array of 2 points as argument
-      def self.from_points(points,srid=DEFAULT_SRID,with_z=false)
+      def self.from_points(points,srid=@@srid,with_z=false)
+        raise "Not an array" unless points.class == Array
         e = Envelope.new(srid,with_z)
         e.lower_corner, e.upper_corner = points
         e
       end
 
       #Creates a new envelope. Accept a sequence of point coordinates as argument : ((x,y),(x,y))
-      def self.from_coordinates(points,srid=DEFAULT_SRID,with_z=false)
+      def self.from_coordinates(points,srid=@@srid,with_z=false)
         e = Envelope.new(srid,with_z)
         e.lower_corner, e.upper_corner =  points.collect{|point_coords| Point.from_coordinates(point_coords,srid,with_z)}
         e
