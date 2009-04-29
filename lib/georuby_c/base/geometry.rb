@@ -1,8 +1,8 @@
 module GeorubyC#:nodoc:
   module Base
-    #arbitrary default SRID 
+    #arbitrary default SRID
     @@srid=4326
-        
+
     #Root of all geometric data classes.
     #Objects of class Geometry should not be instantiated.
     class Geometry
@@ -12,7 +12,7 @@ module GeorubyC#:nodoc:
       attr_accessor :with_z
       #Flag indicating if the m ordinate of the geometry is meaningful
       attr_accessor :with_m
-      
+
       def initialize(srid=@@srid,with_z=false,with_m=false)
         @srid=srid
         @with_z=with_z
@@ -27,7 +27,7 @@ module GeorubyC#:nodoc:
           end
         end
       end
-      
+
       #to be implemented in subclasses
       def bounding_box
       end
@@ -35,19 +35,19 @@ module GeorubyC#:nodoc:
       #to be implemented in subclasses
       def m_range
       end
-      
+
       #Returns an Envelope object for the geometry
       def envelope
         Envelope.from_points(bounding_box,srid,with_z)
       end
-            
+
       #Outputs the geometry as an EWKB string.
       #The +allow_srid+, +allow_z+ and +allow_m+ arguments allow the output to include srid, z and m respectively if they are present in the geometry. If these arguments are set to false, srid, z and m are not included, even if they are present in the geometry. By default, the output string contains all the information in the object.
       def as_ewkb(allow_srid=true,allow_z=true,allow_m=true)
         ewkb="";
-       
+
         ewkb << 1.chr #little_endian by default
-        
+
         type= binary_geometry_type
         if @with_z and allow_z
           type = type | Z_MASK
@@ -61,10 +61,10 @@ module GeorubyC#:nodoc:
         else
           ewkb << [type].pack("V")
         end
-        
+
         ewkb << binary_representation(allow_z,allow_m)
       end
-      
+
       #Outputs the geometry as a strict WKB string.
       def as_wkb
         as_ewkb(false,false,false)
@@ -72,9 +72,7 @@ module GeorubyC#:nodoc:
 
       #Outputs the geometry as a HexEWKB string. It is almost the same as a WKB string, except that each byte of a WKB string is replaced by its hexadecimal 2-character representation in a HexEWKB string.
       def as_hex_ewkb(allow_srid=true,allow_z=true,allow_m=true)
-        str = ""
-        as_ewkb(allow_srid,allow_z,allow_m).each_byte {|char| str << sprintf("%02x",char).upcase}
-        str
+        as_ewkb(allow_srid, allow_z, allow_m).unpack('H*').join('').upcase
       end
       #Outputs the geometry as a strict HexWKB string
       def as_hex_wkb
@@ -88,17 +86,17 @@ module GeorubyC#:nodoc:
         else
           ewkt=""
         end
-        ewkt << text_geometry_type 
-        ewkt << "M" if @with_m and allow_m and (!@with_z or !allow_z) #to distinguish the M from the Z when there is actually no Z... 
-        ewkt << "(" << text_representation(allow_z,allow_m) << ")"        
+        ewkt << text_geometry_type
+        ewkt << "M" if @with_m and allow_m and (!@with_z or !allow_z) #to distinguish the M from the Z when there is actually no Z...
+        ewkt << "(" << text_representation(allow_z,allow_m) << ")"
       end
-      
+
       #Outputs the geometry as strict WKT string.
       def as_wkt
         as_ewkt(false,false,false)
       end
 
-      #Outputs the geometry in georss format. 
+      #Outputs the geometry in georss format.
       #Assumes the geometries are in latlon format, with x as lon and y as lat.
       #Pass the <tt>:dialect</tt> option to swhit format. Possible values are: <tt>:simple</tt> (default), <tt>:w3cgeo</tt> and <tt>:gml</tt>.
       def as_georss(options = {})
@@ -130,13 +128,13 @@ module GeorubyC#:nodoc:
         geom_data += "<extrude>#{options[:extrude]}</extrude>\n" if options[:extrude]
         geom_data += "<tesselate>#{options[:tesselate]}</tesselate>\n" if options[:tesselate]
         geom_data += "<altitudeMode>#{options[:altitude_mode]}</altitudeMode>\n" if options[:altitude_mode]
-        
+
         allow_z = (with_z || !options[:altitude].nil? )&& (!options[:altitude_mode].nil?) && options[:atitude_mode] != "clampToGround"
         fixed_z = options[:altitude]
-        
+
         kml_representation(options.merge(:id_attr => id_attr, :geom_data => geom_data, :allow_z => allow_z, :fixed_z => fixed_z))
       end
-      
+
       #Creates a geometry based on a EWKB string. The actual class returned depends of the content of the string passed as argument. Since WKB strings are a subset of EWKB, they are also valid.
       def self.from_ewkb(ewkb)
         factory = GeometryFactory::new
@@ -158,20 +156,20 @@ module GeorubyC#:nodoc:
         ewkt_parser.parse(ewkt)
         factory.geometry
       end
-      
+
       #sends back a geometry based on the GeoRSS string passed as argument
       def self.from_georss(georss)
         georss_parser= GeorssParser::new
         georss_parser.parse(georss)
         georss_parser.geometry
-      end      
+      end
       #sends back an array: The first element is the goemetry based on the GeoRSS string passed as argument. The second one is the GeoRSSTags (found only with the Simple format)
       def self.from_georss_with_tags(georss)
         georss_parser= GeorssParser::new
         georss_parser.parse(georss,true)
         [georss_parser.geometry, georss_parser.georss_tags]
       end
-      
+
       #Sends back a geometry from a KML encoded geometry string.
       #Limitations : Only supports points, linestrings and polygons (no collection for now).
       #Addapted from Pramukta's code
@@ -184,7 +182,7 @@ module GeorubyC#:nodoc:
         doc = REXML::Document.new(kml)
         wkt = ""
         if ["Point", "LineString", "Polygon" ].include?(doc.root.name)
-          case doc.root.name 
+          case doc.root.name
           when "Point" then
             coords = doc.elements["/Point/coordinates"].text.gsub(/\n/," ")
             wkt = doc.root.name.upcase + "(" + split_coords(coords).join(' ') + ")"
@@ -200,7 +198,7 @@ module GeorubyC#:nodoc:
               inner_coords = inner_coords.text
               bounds << inner_coords
             end
-            
+
             wkt = doc.root.name.upcase + "(" + bounds.map do |bound|
               bound.gsub!(/\n/, " ")
               bound = split_coords(bound)
@@ -211,7 +209,7 @@ module GeorubyC#:nodoc:
             end.join(",") + ")"
           end
         end
-        return wkt 
+        return wkt
       end
 
       private
