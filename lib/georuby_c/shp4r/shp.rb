@@ -6,7 +6,7 @@ require  File.dirname(__FILE__) + '/dbf'
 module GeorubyC
   module Shp4r
 
-    #Enumerates all the types of SHP geometries. The MULTIPATCH one is the only one not currently supported by GeoRuby.
+    #Enumerates all the types of SHP geometries. The MULTIPATCH one is the only one not currently supported by Georuby_C.
     module ShpType
       NULL_SHAPE = 0
       POINT = 1
@@ -161,7 +161,7 @@ module GeorubyC
         case(rec_shp_type)
         when ShpType::POINT
           x, y = @shp.read(16).unpack("E2")
-          geometry = GeoRuby::SimpleFeatures::Point.from_x_y(x,y)
+          geometry = GeorubyC::Base::Point.from_x_y(x,y)
         when ShpType::POLYLINE #actually creates a multi_polyline
           @shp.seek(32,IO::SEEK_CUR) #extent
           num_parts, num_points = @shp.read(8).unpack("V2")
@@ -169,12 +169,12 @@ module GeorubyC
           parts << num_points #indexes for LS of idx i go to parts of idx i to idx i +1
           points = Array.new(num_points) do
             x, y = @shp.read(16).unpack("E2")
-            GeoRuby::SimpleFeatures::Point.from_x_y(x,y)
+            GeorubyC::Base::Point.from_x_y(x,y)
           end
           line_strings = Array.new(num_parts) do |i|
-            GeoRuby::SimpleFeatures::LineString.from_points(points[(parts[i])...(parts[i+1])])
+            GeorubyC::Base::LineString.from_points(points[(parts[i])...(parts[i+1])])
           end
-          geometry = GeoRuby::SimpleFeatures::MultiLineString.from_line_strings(line_strings)
+          geometry = GeorubyC::Base::MultiLineString.from_line_strings(line_strings)
         when ShpType::POLYGON
           #TODO : TO CORRECT
           #does not take into account the possibility that the outer loop could be after the inner loops in the SHP + more than one outer loop
@@ -185,25 +185,25 @@ module GeorubyC
           parts << num_points #indexes for LS of idx i go to parts of idx i to idx i +1
           points = Array.new(num_points) do
             x, y = @shp.read(16).unpack("E2")
-            GeoRuby::SimpleFeatures::Point.from_x_y(x,y)
+            GeorubyC::Base::Point.from_x_y(x,y)
           end
           linear_rings = Array.new(num_parts) do |i|
-            GeoRuby::SimpleFeatures::LinearRing.from_points(points[(parts[i])...(parts[i+1])])
+            GeorubyC::Base::LinearRing.from_points(points[(parts[i])...(parts[i+1])])
           end
-          geometry = GeoRuby::SimpleFeatures::MultiPolygon.from_polygons([GeoRuby::SimpleFeatures::Polygon.from_linear_rings(linear_rings)])
+          geometry = GeorubyC::Base::MultiPolygon.from_polygons([GeorubyC::Base::Polygon.from_linear_rings(linear_rings)])
         when ShpType::MULTIPOINT
           @shp.seek(32,IO::SEEK_CUR)
           num_points = @shp.read(4).unpack("V")[0]
           points = Array.new(num_points) do
             x, y = @shp.read(16).unpack("E2")
-            GeoRuby::SimpleFeatures::Point.from_x_y(x,y)
+            GeorubyC::Base::Point.from_x_y(x,y)
           end
-          geometry = GeoRuby::SimpleFeatures::MultiPoint.from_points(points)
+          geometry = GeorubyC::Base::MultiPoint.from_points(points)
 
 
         when ShpType::POINTZ
           x, y, z, m = @shp.read(24).unpack("E4")
-          geometry = GeoRuby::SimpleFeatures::Point.from_x_y_z_m(x,y,z,m)
+          geometry = GeorubyC::Base::Point.from_x_y_z_m(x,y,z,m)
 
 
         when ShpType::POLYLINEZ
@@ -217,12 +217,12 @@ module GeorubyC
           @shp.seek(16,IO::SEEK_CUR)
           ms = Array.new(num_points) {@shp.read(8).unpack("E")[0]}
           points = Array.new(num_points) do |i|
-            GeoRuby::SimpleFeatures::Point.from_x_y_z_m(xys[i][0],xys[i][1],zs[i],ms[i])
+            GeorubyC::Base::Point.from_x_y_z_m(xys[i][0],xys[i][1],zs[i],ms[i])
           end
           line_strings = Array.new(num_parts) do |i|
-            GeoRuby::SimpleFeatures::LineString.from_points(points[(parts[i])...(parts[i+1])],GeoRuby::SimpleFeatures::DEFAULT_SRID,true,true)
+            GeorubyC::Base::LineString.from_points(points[(parts[i])...(parts[i+1])],GeorubyC::Base::default_srid,true,true)
           end
-          geometry = GeoRuby::SimpleFeatures::MultiLineString.from_line_strings(line_strings,GeoRuby::SimpleFeatures::DEFAULT_SRID,true,true)
+          geometry = GeorubyC::Base::MultiLineString.from_line_strings(line_strings,GeorubyC::Base::default_srid,true,true)
 
 
         when ShpType::POLYGONZ
@@ -241,9 +241,9 @@ module GeorubyC
             Point.from_x_y_z_m(xys[i][0],xys[i][1],zs[i],ms[i])
           end
           linear_rings = Array.new(num_parts) do |i|
-            GeoRuby::SimpleFeatures::LinearRing.from_points(points[(parts[i])...(parts[i+1])],GeoRuby::SimpleFeatures::DEFAULT_SRID,true,true)
+            GeorubyC::Base::LinearRing.from_points(points[(parts[i])...(parts[i+1])],GeorubyC::Base::default_srid,true,true)
           end
-          geometry = GeoRuby::SimpleFeatures::MultiPolygon.from_polygons([GeoRuby::SimpleFeatures::Polygon.from_linear_rings(linear_rings)],GeoRuby::SimpleFeatures::DEFAULT_SRID,true,true)
+          geometry = GeorubyC::Base::MultiPolygon.from_polygons([GeorubyC::Base::Polygon.from_linear_rings(linear_rings)],GeorubyC::Base::default_srid,true,true)
 
 
         when ShpType::MULTIPOINTZ
@@ -259,11 +259,11 @@ module GeorubyC
             Point.from_x_y_z_m(xys[i][0],xys[i][1],zs[i],ms[i])
           end
 
-          geometry = GeoRuby::SimpleFeatures::MultiPoint.from_points(points,GeoRuby::SimpleFeatures::DEFAULT_SRID,true,true)
+          geometry = GeorubyC::Base::MultiPoint.from_points(points,GeorubyC::Base::default_srid,true,true)
 
         when ShpType::POINTM
           x, y, m = @shp.read(24).unpack("E3")
-          geometry = GeoRuby::SimpleFeatures::Point.from_x_y_m(x,y,m)
+          geometry = GeorubyC::Base::Point.from_x_y_m(x,y,m)
 
         when ShpType::POLYLINEM
           @shp.seek(32,IO::SEEK_CUR)
@@ -277,9 +277,9 @@ module GeorubyC
             Point.from_x_y_m(xys[i][0],xys[i][1],ms[i])
           end
           line_strings = Array.new(num_parts) do |i|
-            GeoRuby::SimpleFeatures::LineString.from_points(points[(parts[i])...(parts[i+1])],GeoRuby::SimpleFeatures::DEFAULT_SRID,false,true)
+            GeorubyC::Base::LineString.from_points(points[(parts[i])...(parts[i+1])],GeorubyC::Base::default_srid,false,true)
           end
-          geometry = GeoRuby::SimpleFeatures::MultiLineString.from_line_strings(line_strings,GeoRuby::SimpleFeatures::DEFAULT_SRID,false,true)
+          geometry = GeorubyC::Base::MultiLineString.from_line_strings(line_strings,GeorubyC::Base::default_srid,false,true)
 
 
         when ShpType::POLYGONM
@@ -296,9 +296,9 @@ module GeorubyC
             Point.from_x_y_m(xys[i][0],xys[i][1],ms[i])
           end
           linear_rings = Array.new(num_parts) do |i|
-            GeoRuby::SimpleFeatures::LinearRing.from_points(points[(parts[i])...(parts[i+1])],GeoRuby::SimpleFeatures::DEFAULT_SRID,false,true)
+            GeorubyC::Base::LinearRing.from_points(points[(parts[i])...(parts[i+1])],GeorubyC::Base::default_srid,false,true)
           end
-          geometry = GeoRuby::SimpleFeatures::MultiPolygon.from_polygons([GeoRuby::SimpleFeatures::Polygon.from_linear_rings(linear_rings)],GeoRuby::SimpleFeatures::DEFAULT_SRID,false,true)
+          geometry = GeorubyC::Base::MultiPolygon.from_polygons([GeorubyC::Base::Polygon.from_linear_rings(linear_rings)],GeorubyC::Base::default_srid,false,true)
 
 
         when ShpType::MULTIPOINTM
@@ -312,7 +312,7 @@ module GeorubyC
             Point.from_x_y_m(xys[i][0],xys[i][1],ms[i])
           end
 
-          geometry = GeoRuby::SimpleFeatures::MultiPoint.from_points(points,GeoRuby::SimpleFeatures::DEFAULT_SRID,false,true)
+          geometry = GeorubyC::Base::MultiPoint.from_points(points,GeorubyC::Base::default_srid,false,true)
         else
           geometry = nil
         end
@@ -402,17 +402,17 @@ module GeorubyC
       private
 
       def to_shp_type(geom)
-        root = if geom.is_a? GeoRuby::SimpleFeatures::Point
+        root = if geom.is_a? GeorubyC::Base::Point
                  "POINT"
-               elsif geom.is_a? GeoRuby::SimpleFeatures::LineString
+               elsif geom.is_a? GeorubyC::Base::LineString
                  "POLYLINE"
-               elsif geom.is_a?  GeoRuby::SimpleFeatures::Polygon
+               elsif geom.is_a?  GeorubyC::Base::Polygon
                  "POLYGON"
-               elsif geom.is_a?  GeoRuby::SimpleFeatures::MultiPoint
+               elsif geom.is_a?  GeorubyC::Base::MultiPoint
                  "MULTIPOINT"
-               elsif geom.is_a?  GeoRuby::SimpleFeatures::MultiLineString
+               elsif geom.is_a?  GeorubyC::Base::MultiLineString
                  "POLYLINE"
-               elsif geom.is_a?  GeoRuby::SimpleFeatures::MultiPolygon
+               elsif geom.is_a?  GeorubyC::Base::MultiPolygon
                  "POLYGON"
                else
                  false
@@ -589,7 +589,7 @@ module GeorubyC
       end
 
       def build_polyline(geometry,str)
-        if geometry.is_a? GeoRuby::SimpleFeatures::LineString
+        if geometry.is_a? GeorubyC::Base::LineString
           str << [1,geometry.length,0].pack("V3")
           geometry.each do |point|
               str << [point.x,point.y].pack("E2")
@@ -609,7 +609,7 @@ module GeorubyC
 
       def build_polyline_zm(geometry,zm,range,str)
         str << range.pack("E2")
-        if geometry.is_a? GeoRuby::SimpleFeatures::LineString
+        if geometry.is_a? GeorubyC::Base::LineString
           geometry.each do |point|
             str << [point.instance_variable_get(zm)].pack("E")
           end
@@ -625,7 +625,7 @@ module GeorubyC
       end
 
       def build_polygon(geometry,str)
-        if geometry.is_a? GeoRuby::SimpleFeatures::Polygon
+        if geometry.is_a? GeorubyC::Base::Polygon
           str << [geometry.length,geometry.inject(0) {|l, lr| l + lr.length}].pack("V2")
           str << geometry.inject([0]) {|a,lr| a << (a.last + lr.length)}.pack("V#{geometry.length}") #last element of the previous array is dropped
           geometry.each do |lr|
@@ -651,7 +651,7 @@ module GeorubyC
 
       def build_polygon_zm(geometry,zm,range,str)
         str << range.pack("E2")
-        if geometry.is_a? GeoRuby::SimpleFeatures::Polygon
+        if geometry.is_a? GeorubyC::Base::Polygon
           geometry.each do |lr|
             lr.each do |point|
               str << [point.instance_variable_get(zm)].pack("E")

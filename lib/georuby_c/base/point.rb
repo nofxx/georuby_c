@@ -305,7 +305,7 @@ module GeorubyC
             val << str % [l.to_i, min, sec]
           end
         end
-          val.join(", ")
+        val.join(", ")
       end
 
       #aliasing the constructors in case you want to use lat/lon instead of y/x

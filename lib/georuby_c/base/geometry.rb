@@ -3,6 +3,10 @@ module GeorubyC#:nodoc:
     #arbitrary default SRID
     @@srid=4326
 
+    def self.default_srid
+      @@srid
+    end
+
     #Root of all geometric data classes.
     #Objects of class Geometry should not be instantiated.
     class Geometry
