@@ -2,8 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Envelope do
   before(:each) do
-    @env = Envelope.from_points(
-      Point.from_x_y(10,20),Point.from_x_y(20,30))
+    @env = Envelope.from_points([Point.from_x_y(10,20),Point.from_x_y(20,30)])
   end
 
   it "should initialize" do

@@ -196,11 +196,11 @@ module GeorubyC
       #outputs theta
       def theta_rad
         if @x.zero?
-    			@y < 0 ? 3 * Math::PI / 2 : Math::PI / 2
-    		else
-    			th = Math.atan(@y/@x)
-    		  th += 2 * Math::PI if r > 0
-    		end
+                        @y < 0 ? 3 * Math::PI / 2 : Math::PI / 2
+                else
+                        th = Math.atan(@y/@x)
+                  th += 2 * Math::PI if r > 0
+                end
       end
 
       def theta_deg
@@ -271,6 +271,17 @@ module GeorubyC
         y = r * Math.sin(t)
         point= new(srid)
         point.set_x_y(x,y)
+      end
+
+      def self.from_latlong(lat,lon,srid=@@srid)
+        p = [lat,lon].map do |l|
+          sig, deg, min, sec, cen = l.scan(/(-)?(\d{1,2})\D*(\d{2})\D*(\d{2})(\D*(\d{1,3}))?/).flatten
+          sig = true if l =~ /W|S/
+          dec = deg.to_i + (min.to_i * 60 + "#{sec}#{cen}".to_f) / 3600
+          sig ? dec * -1 : dec
+        end
+        point= new(srid)
+        point.set_x_y(p[0],p[1])
       end
 
       #aliasing the constructors in case you want to use lat/lon instead of y/x

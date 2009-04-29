@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Point do
@@ -16,36 +17,51 @@ describe Point do
   describe "> Instantiation" do
 
     it "should instantiate a 2d point" do
-      @point = Point.from_x_y(10,20)
-      @point.should be_instance_of(Point)
+      point = Point.from_x_y(10,20)
+      point.should be_instance_of(Point)
     end
 
     it "should instantiate a 3d point" do
-      @point = Point.from_x_y_z(10,20,30)
-      @point.should be_instance_of(Point)
+      point = Point.from_x_y_z(10,20,30)
+      point.should be_instance_of(Point)
     end
 
     it "should instantiate a 4d point" do
-      @point = Point.from_x_y_z_m(10,20,30,40)
-      @point.should be_instance_of(Point)
+      point = Point.from_x_y_z_m(10,20,30,40)
+      point.m.should eql(40)
     end
 
     it "should instantiate a point from positive degrees" do
-      @point = Point.from_x_y_xl_yl('04720.0609','E','2250.7735','N')
-      @point.y.should be_close(22.846225, 0.000001)
-      @point.x.should be_close(47.3343483333333, 0.0000001)
+      point = Point.from_x_y_xl_yl('04720.0609','E','2250.7735','N')
+      point.y.should be_close(22.846225, 0.000001)
+      point.x.should be_close(47.3343483333333, 0.0000001)
     end
 
     it "should instantiate a point from negative degrees" do
-      @point = Point.from_x_y_xl_yl('04720.0609','W','2250.7735','S')
-      @point.y.should be_close(-22.846225, 0.000001)
-      @point.x.should be_close(-47.3343483333333, 0.0000001)
+      point = Point.from_x_y_xl_yl('04720.0609','W','2250.7735','S')
+      point.y.should be_close(-22.846225, 0.000001)
+      point.x.should be_close(-47.3343483333333, 0.0000001)
     end
 
     it "should instantiate a point from polar coordinates" do
-      @point = Point.from_r_t(1.4142,45)
-      @point.y.should be_close(1, 0.00001)
-      @point.x.should be_close(1, 0.00001)
+      point = Point.from_r_t(1.4142,45)
+      point.y.should be_close(1, 0.00001)
+      point.x.should be_close(1, 0.00001)
+    end
+
+    it "should parse lat long" do
+      Point.from_latlong("-20° 47' 26.37","-20° 47' 26.37").x.should be_close(-20.790658, 0.00001)
+      Point.from_latlong("20° 47' 26.378","20° 47' 26.378").y.should be_close(20.790658, 0.00001)
+    end
+
+    it "should parse lat long w/o sec" do
+      Point.from_latlong("-20° 47' 26","-20° 47' 26").x.should be_close(-20.790555, 0.00001)
+      Point.from_latlong("20° 47' 26","20° 47' 26").y.should be_close(20.790555, 0.00001)
+    end
+
+    it "should accept with W or S notation" do
+      Point.from_latlong("20° 47' 26.37 W","20° 47' 26.37 S").x.should be_close(-20.790658, 0.00001)
+      Point.from_latlong("20° 47' 26.37 W","20° 47' 26.37 S").y.should be_close(-20.790658, 0.00001)
     end
   end
 
