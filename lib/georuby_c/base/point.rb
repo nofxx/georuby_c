@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require "georuby_c/base/geometry"
 
 module GeorubyC
@@ -38,8 +39,6 @@ module GeorubyC
         self
       end
       alias :set_lon_lat :set_x_y
-
-
 
       #Return the distance between the 2D points (ie taking care only of the x and y coordinates), assuming
       #the points are in projected coordinates. Euclidian distance in whatever unit the x and y ordinates are.
@@ -187,6 +186,8 @@ module GeorubyC
         result += "</Point>\n"
       end
 
+
+
       #Polar stuff
       #http://www.engineeringtoolbox.com/converting-cartesian-polar-coordinates-d_1347.html
       #http://rcoordinate.rubyforge.org/svn/point.rb
@@ -196,11 +197,11 @@ module GeorubyC
       #outputs theta
       def theta_rad
         if @x.zero?
-                        @y < 0 ? 3 * Math::PI / 2 : Math::PI / 2
-                else
-                        th = Math.atan(@y/@x)
-                  th += 2 * Math::PI if r > 0
-                end
+          @y < 0 ? 3 * Math::PI / 2 : Math::PI / 2
+        else
+          th = Math.atan(@y/@x)
+          th += 2 * Math::PI if r > 0
+        end
       end
 
       def theta_deg
@@ -282,6 +283,29 @@ module GeorubyC
         end
         point= new(srid)
         point.set_x_y(p[0],p[1])
+      end
+
+      def as_latlong(opts = { })
+        val = []
+        [x,y].each_with_index do |l,i|
+          deg = l.to_i.abs
+          min = (60 * (l.abs - deg)).to_i
+          labs = (l * 1000000).abs
+          sec = (((((labs/1000000) - (labs/1000000).to_i) * 60) - (((labs/1000000) - (labs/1000000).to_i) * 60).to_i) * 100000) * 60 / 100000
+          str = opts[:full] ? "%.i°%.2i′%05.2f″" :  "%.i°%.2i′%02.0f″"
+          if opts[:coord]
+            out = str % [deg,min,sec]
+            if i == 0
+              out += l > 0 ? "N" : "S"
+            else
+              out += l > 0 ? "E" : "W"
+            end
+            val << out
+          else
+            val << str % [l.to_i, min, sec]
+          end
+        end
+          val.join(", ")
       end
 
       #aliasing the constructors in case you want to use lat/lon instead of y/x

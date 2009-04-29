@@ -55,14 +55,35 @@ describe Point do
     end
 
     it "should parse lat long w/o sec" do
-      Point.from_latlong("-20° 47' 26","-20° 47' 26").x.should be_close(-20.790555, 0.00001)
-      Point.from_latlong("20° 47' 26","20° 47' 26").y.should be_close(20.790555, 0.00001)
+      Point.from_latlong("-20°47′26″","-20°47′26″").x.should be_close(-20.790555, 0.00001)
+      Point.from_latlong("20°47′26″","20°47′26″").y.should be_close(20.790555, 0.00001)
     end
 
     it "should accept with W or S notation" do
       Point.from_latlong("20° 47' 26.37 W","20° 47' 26.37 S").x.should be_close(-20.790658, 0.00001)
       Point.from_latlong("20° 47' 26.37 W","20° 47' 26.37 S").y.should be_close(-20.790658, 0.00001)
     end
+
+    it "should print out nicely" do
+      Point.from_x_y(47.88, -20.1).as_latlong.should eql("47°52′48″, -20°06′00″")
+    end
+
+    it "should print out nicely" do
+      Point.from_x_y(-20.78, 20.78).as_latlong(:full => true).should eql("-20°46′48.00″, 20°46′48.00″")
+    end
+
+    it "should print out nicely" do
+      Point.from_x_y(47.11, -20.2).as_latlong(:full => true).should eql("47°06′36.00″, -20°11′60.00″")
+    end
+
+    it "should print out nicely" do
+      Point.from_x_y(47.11, -20.2).as_latlong(:coord => true).should eql("47°06′36″N, 20°11′60″W")
+    end
+
+    it "should print out nicely" do
+      Point.from_x_y(-47.11, 20.2).as_latlong(:full => true,:coord => true).should eql("47°06′36.00″S, 20°11′60.00″E")
+    end
+
   end
 
   describe " > Distance" do
