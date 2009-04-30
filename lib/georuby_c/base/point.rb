@@ -238,7 +238,6 @@ module GeorubyC
         point.set_x_y_z(x,y,z)
       end
 
-
       #creates a point from the X, Y and M coordinates
       def self.from_x_y_m(x,y,m,srid=@@srid)
         point= new(srid,false,true)

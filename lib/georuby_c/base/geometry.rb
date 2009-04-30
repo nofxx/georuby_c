@@ -14,8 +14,10 @@ module GeorubyC#:nodoc:
       attr_reader :srid #writer defined below
       #Flag indicating if the z ordinate of the geometry is meaningful
       attr_accessor :with_z
+      alias :with_z? :with_z
       #Flag indicating if the m ordinate of the geometry is meaningful
       attr_accessor :with_m
+      alias :with_m? :with_m
 
       def initialize(srid=@@srid,with_z=false,with_m=false)
         @srid=srid

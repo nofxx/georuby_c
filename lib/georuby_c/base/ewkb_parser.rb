@@ -1,13 +1,13 @@
-require 'geo_ruby/base/point'
-require 'geo_ruby/base/line_string'
-require 'geo_ruby/base/linear_ring'
-require 'geo_ruby/base/polygon'
-require 'geo_ruby/base/multi_point'
-require 'geo_ruby/base/multi_line_string'
-require 'geo_ruby/base/multi_polygon'
-require 'geo_ruby/base/geometry_collection'
+require 'georuby_c/base/point'
+require 'georuby_c/base/line_string'
+require 'georuby_c/base/linear_ring'
+require 'georuby_c/base/polygon'
+require 'georuby_c/base/multi_point'
+require 'georuby_c/base/multi_line_string'
+require 'georuby_c/base/multi_polygon'
+require 'georuby_c/base/geometry_collection'
 
-module GeoRuby
+module GeorubyC
   module Base
 
     #Raised when an error in the EWKB string is detected
