@@ -180,7 +180,7 @@ module GeorubyC#:nodoc:
       #Limitations : Only supports points, linestrings and polygons (no collection for now).
       #Addapted from Pramukta's code
       def self.from_kml(kml)
-        return GeoRuby::SimpleFeatures::Geometry.from_ewkt(kml_to_wkt(kml))
+        return GeorubyC::Base::Geometry.from_ewkt(kml_to_wkt(kml))
       end
 
       require 'rexml/document'

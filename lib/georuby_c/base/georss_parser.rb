@@ -8,8 +8,8 @@ require 'georuby_c/base/multi_polygon'
 require 'georuby_c/base/geometry_collection'
 require 'georuby_c/base/envelope'
 
-module GeoRuby
-  module SimpleFeatures
+module GeorubyC
+  module Base
 
     #Raised when an error in the GeoRSS string is detected
     class GeorssFormatError < StandardError
