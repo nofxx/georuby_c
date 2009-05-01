@@ -1,6 +1,5 @@
 require 'georuby_c/base/geometry_collection'
 
-
 module GeorubyC
   module Base
     #Represents a group of polygons (see Polygon).
